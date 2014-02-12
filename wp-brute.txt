@@ -12,12 +12,11 @@ do
 	ip=`echo $LOG | awk '{print $2}'`
 
 	if [ "$attempts" -ge "50" ]; then
-		echo $attempts "login attempts from" $ip 
 		# make sure it’s not banned already
 		maybeban=`echo $iprules | grep $ip`
 		
 		if [[ -z "$maybeban" ]]; then
-			echo "Banning" $ip
+			logger "wp-brute.sh is banning" $ip "for" $attempts "login attempts."
 			iptables -I INPUT -s $ip -j DROP
 		fi
 	fi
