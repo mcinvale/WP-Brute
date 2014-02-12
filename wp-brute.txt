@@ -1,0 +1,25 @@
+#!/bin/sh
+# find all WP login attempts
+/bin/grep -h 'POST /wp-login.php' /var/log/httpd/domains/*.log | awk '{print $1}' | uniq -c > /tmp/wp-brute.txt
+
+# get all of our DROP rules
+iprules=`/sbin/iptables --list INPUT -n | grep DROP`
+
+while read LOG
+do
+
+	attempts=`echo $LOG | awk '{print $1}'`
+	ip=`echo $LOG | awk '{print $2}'`
+
+	if [ "$attempts" -ge "50" ]; then
+		echo $attempts "login attempts from" $ip 
+		# make sure it’s not banned already
+		maybeban=`echo $iprules | /bin/grep $ip`
+		
+		if [[ -z "$maybeban" ]]; then
+			echo "Banning" $ip
+			/sbin/iptables -I INPUT -s $ip -j DROP
+		fi
+	fi
+	
+done < /tmp/wp-brute.txt
