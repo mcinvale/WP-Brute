@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # find all WP login attempts
 grep -h 'POST /wp-login.php' /var/log/httpd/domains/*.log | awk '{print $1}' | sort -n | uniq -cd > /tmp/wp-brute.txt
 
