@@ -1,6 +1,6 @@
 #!/bin/bash
 # find all WP login attempts
-/bin/grep -h 'POST /wp-login.php' /var/log/httpd/domains/*.log | /bin/awk '{print $1}' | /bin/sort -n | /usr/bin/uniq -cd > /tmp/wp-brute.txt
+/bin/grep -h 'POST /wp-login.php' /var/log/httpd/domains/*.log | /bin/grep -v 'cdn' | /bin/awk '{print $1}' | /bin/sort -n | /usr/bin/uniq -cd > /tmp/wp-brute.txt
 
 # get all of our DROP rules
 iprules=`/sbin/iptables --list INPUT -n | grep DROP`
